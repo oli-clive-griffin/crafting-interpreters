@@ -6,16 +6,19 @@ struct DLLNode {
   struct DLLNode *next;
   char *value;
 };
-
 typedef struct DLLNode DLLNode;
+
+typedef struct {
+  DLLNode *head;
+  DLLNode *tail;
+} DLL;
 
 void printNode(DLLNode *dll) {
   printf("NODE - value: %s", dll->value);
 }
 
-
-void printList(DLLNode *dll) {
-  DLLNode *nodeptr = dll;
+void printList(DLL *dll) {
+  DLLNode *nodeptr = &dll->head;
   int i = 0;
   while (nodeptr != NULL) {
     printNode(nodeptr);
@@ -25,29 +28,22 @@ void printList(DLLNode *dll) {
   }
 }
 
-DLLNode *last(DLLNode *dll) {
-  if (dll == NULL)
-    return NULL;
-
-  while (dll->next != NULL)
-    dll = dll->next;
-  return dll;
-}
-
-DLLNode *prependToList(DLLNode *dll, char* value) {
+// TODO
+DLL *prependToList(DLL *dll, char* value) {
+  DLLNode *head = dll->head;
   DLLNode *newHead = malloc(sizeof(DLLNode));
   newHead->value = value;
-  newHead->next = dll;
-  if (dll != NULL)
-    dll->prev = newHead;
+  newHead->next = head;
+  if (head != NULL)
+    head->prev = newHead;
   return newHead;
 }
 
-int appendToList(DLLNode *dll, char* value) {
+int appendToList(DLL *dll, char* value) {
   if (dll == NULL)
     return 1;
 
-  DLLNode *lastptr = last(dll);
+  DLLNode *lastptr = dll->tail;
 
   DLLNode *app_node = malloc(sizeof(DLLNode));
   app_node->next = NULL;
@@ -59,10 +55,11 @@ int appendToList(DLLNode *dll, char* value) {
   return 0;
 }
 
-void freeList(DLLNode *dll) {
-  while (dll != NULL) {
-    DLLNode *tmp = dll;
-    dll = dll->next;
+void freeList(DLL *dll) {
+  DLLNode *node = dll->head;
+  while (node != NULL) {
+    DLLNode *tmp = node;
+    node = node->next;
     free(tmp);
   }
 }
